@@ -38,3 +38,6 @@ jobs:
         github_token: ${{ secrets.REPO_TOKEN }}
         workflow_file_name: config-management.yml
         ref: master
+    - name: Trigger to Ansible
+      run: |
+        echo "succesfuly triggered"
