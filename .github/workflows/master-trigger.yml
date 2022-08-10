@@ -27,7 +27,7 @@ jobs:
         Write-Host "::set-output name=docs_changed::$HasDiff"
   # Run the job only with "docs_changed" equals "True"
     
-  install_dependencies:
+  push_templates:
     runs-on: 'ubuntu-20.04'
     needs: [ checking_template_update ]
     if: needs.checking_template_update.outputs.docs_changed == 'True'
@@ -40,7 +40,12 @@ jobs:
         dst_path: roles/install-dep/
         dst_owner: Natannegara
         dst_repo_name: config-management
-        
+
+  push_vars:
+    runs-on: 'ubuntu-20.04'
+    needs: [ push_templates ]
+    if: needs.checking_template_update.outputs.docs_changed == 'True'
+    steps:        
     - uses: andstor/copycat-action@v3
       name: Push target to ansbile repository
       with:
@@ -49,7 +54,12 @@ jobs:
         dst_path: roles/install-dep/
         dst_owner: Natannegara
         dst_repo_name: config-management
-        
+
+  trigger_ansible:
+    runs-on: 'ubuntu-20.04'
+    needs: [ push_vars ]
+    if: needs.checking_template_update.outputs.docs_changed == 'True'
+    steps:         
     - uses: convictional/trigger-workflow-and-wait@v1.3.0
       with:
         owner: Natannegara
