@@ -26,6 +26,15 @@ jobs:
         # Set the output named "docs_changed"
         Write-Host "::set-output name=docs_changed::$HasDiff"
   # Run the job only with "docs_changed" equals "True"
+    - uses: andstor/copycat-action@v3
+      name: Copy artifact to ansible repo
+      with:
+        personal_token: ${{ secrets.REPO_TOKEN }}
+        src_path: projects/templates/
+        dst_path: roles/install-dep/templates/
+        dst_owner: Natannegara
+        dst_repo_name: config-management
+    
   install_dependencies:
     runs-on: 'ubuntu-20.04'
     needs: [ checking_template_update ]
