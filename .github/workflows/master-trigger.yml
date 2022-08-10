@@ -31,13 +31,10 @@ jobs:
     needs: [ checking_template_update ]
     if: needs.checking_template_update.outputs.docs_changed == 'True'
     steps:
-    - user: convictional/trigger-workflow-and-wait@v1.3.0
+    - uses: convictional/trigger-workflow-and-wait@v1.3.0
       with:
         owner: Natannegara
         repo: config-management
         github_token: ${{ secrets.REPO_TOKEN }}
         workflow_file_name: config-management.yml
         ref: master
-    - name: Trigger to Ansible
-      run: |
-        echo "succesfuly triggered"
