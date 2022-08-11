@@ -55,12 +55,31 @@ jobs:
     
     - name: copy src to dest
       run: |
-        mkdir -p dest/config-management/test
-        cp -rvT src/projects dest/config-management/test
-        echo dest
-        ls dest/config-management
-        echo src
-        ls src/projects
+        mkdir -p dest/config-management/roles/install-dep/templates/
+        cp -rvT src/projects/* dest/config-management/roles/install-dep/templates/
+
+    - name: Check an Update
+      id: newFiles
+      shell: bash
+      working-directory: dest
+      run: |
+        git add -A
+        git status --porcelain | wc -l
+        if [[ $(git status --porcelain | wc -l ) -gt 0]]; then
+          echo "::set-output name=hasNewFiles::true"
+        else
+          echo "::set-output name=hasNewFiles::false"
+        fi
+    
+    - name: Push an Update
+      if: ${{ steps.newFiles.outputs.hasNewFiles == 'true' }}
+      shell: bash
+      working-directory: dest
+      run: |
+        git config --global user.name "${{ secrets.RUNNER_USER }}"
+        git config --global user.email "${{ secrets.RUNNER_EMAIL }}"
+        git commit -m "maint: New Update ${{ GITHUB_RUN_ID }}"
+        git push
         
 
     # - uses: convictional/trigger-workflow-and-wait@v1.3.0
