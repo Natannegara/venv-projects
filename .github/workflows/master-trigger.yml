@@ -27,7 +27,7 @@ jobs:
             echo "::set-output name=docs_changed::True"
             exit 0
           else
-            echo false $i
+            echo $i
           fi
         done
 
