@@ -43,19 +43,17 @@ jobs:
         ref: master
         persist-credentials: false
 
-    - name: Rename folder as templates
+    - name: Check an Update
+      id: newFiles
       shell: bash
       run: |
-        mv src/projects src/templates
-       
-    - uses: andstor/copycat-action@v3
-      name: Push target to ansbile repository
-      with:
-        personal_token: ${{ secrets.REPO_TOKEN }}
-        src_path: src/templates/
-        dst_path: roles/install-dep/
-        dst_owner: Natannegara
-        dst_repo_name: config-management
+        git config --global user.name "${{ secrets.RUNNER_USER }}"
+        git config --global user.email "${{ secrets.RUNNER_EMAIL }}"
+        git commit -m "maint: New Update ${{ github.event }}"
+        git config --global credential.helper cache
+        git clone https://${{secrets.REPO_TOKEN}}@github.com/Natannegara/config-management
+        
+        ls config-management
 
     # - uses: convictional/trigger-workflow-and-wait@v1.3.0
     #   name: Triggering to Ansible
