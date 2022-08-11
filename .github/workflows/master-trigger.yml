@@ -42,9 +42,13 @@ jobs:
         path: 'src'
         ref: master
         persist-credentials: false
+    
+    - run: mkdir -p clone-folder
+      shell: bash
 
     - name: Check an Update
       id: newFiles
+      working-directory: clone-folder
       shell: bash
       run: |
         git config --global user.name "${{ secrets.RUNNER_USER }}"
