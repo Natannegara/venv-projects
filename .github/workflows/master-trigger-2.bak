@@ -43,19 +43,46 @@ jobs:
         ref: master
         persist-credentials: false
 
-    - name: Rename folder as templates
+    - name: Get ansible directory
+      uses: actions/checkout@v3
+      with:
+        path: 'dest'
+        ref: master
+        persist-credentials: true
+        repository: 'Natannegara/config-management'
+        token: '${{ secrets.REPO_TOKEN }}'
+        fetch-depth: 0
+
+    - name: copy src to dest
       shell: bash
       run: |
-        mv src/projects src/templates
-       
-    - uses: andstor/copycat-action@v3
-      name: Push target to ansbile repository
-      with:
-        personal_token: ${{ secrets.REPO_TOKEN }}
-        src_path: src/templates/
-        dst_path: roles/install-dep/
-        dst_owner: Natannegara
-        dst_repo_name: config-management
+        mkdir -p dest/config-management/roles/install-dep/templates
+        cp -r src/projects/* dest/config-management/roles/install-dep/templates
+
+    - name: Check an Update
+      id: newFiles
+      shell: bash
+      working-directory: dest
+      run: |
+        git ls-files --others --exclude-standard
+        # for i in $(find config-management/roles/install-dep/templates/ -type f - name '*.txt'); do
+        # for i in $(git ls-files --others --exclude-standard); do
+        for i in $(ls ../src/templates/); do
+          git add roles/install-dep/templates/$i
+        done
+        git config --global user.name "${{ secrets.RUNNER_USER }}"
+        git config --global user.email "${{ secrets.RUNNER_EMAIL }}"
+        git commit -m "maint: New Update ${{ github.event }}"
+        git ls-files --others --exclude-standard
+        git push
+
+        # echo "::set-output name=hasNewFiles::true"
+        # git status --porcelain | wc -l
+        # if [[ $(git status --porcelain | wc -l ) -gt 0]]; then
+        #   echo "::set-output name=hasNewFiles::true"
+        # else
+        #   echo "::set-output name=hasNewFiles::false"
+        # fi
 
     # - uses: convictional/trigger-workflow-and-wait@v1.3.0
     #   name: Triggering to Ansible
