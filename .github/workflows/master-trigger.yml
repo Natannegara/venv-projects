@@ -64,9 +64,7 @@ jobs:
       shell: bash
       working-directory: dest
       run: |
-        export list-file=$(ls config-management/roles/install-dep/templates/)
-        
-        for i in $list-file; do
+        for i in $(ls config-management/roles/install-dep/templates/); do
           git add $i
         done
         
