@@ -10,7 +10,6 @@ jobs:
     # Declare outputs for next jobs
     outputs:
       docs_changed: ${{ steps.check_file_changed.outputs.docs_changed }}
-      source_diff: ${{ steps.check_file_changed.outputs.source_diff }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -18,22 +17,25 @@ jobs:
         fetch-depth: 2
     - shell: bash
       id: check_file_changed
+      name: Check for any updates in projects folder
       run: |
         export diff=$(git diff --name-only HEAD^ HEAD)
         export updated="projects/"
 
         for i in $diff; do
           if [[ "$i" == "$updated"* ]]; then
-            echo true $i
-            echo "::set-output name=docs_changed::$i"
+            echo "::set-output name=docs_changed::True"
             exit 0
           else
             echo false $i
           fi
         done
 
-    - run: |
-        echo ${{ steps.check_file_changed.outputs.docs_changed }}
+  print-output:
+  needs: [ checking_template_update ] 
+  run: |
+      echo ${{ needs.checking_template_update.outputs.docs_changed }}
+  name: Check Output
     
   # push_templates:
   #   runs-on: 'ubuntu-20.04'
