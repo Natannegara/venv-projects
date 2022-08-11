@@ -34,24 +34,41 @@ jobs:
   send_venv:
     runs-on: 'ubuntu-20.04'
     needs: [ checking_template_update ]
-    if: needs.checking_template_update.outputs.docs_changed == 'True'
+    # if: needs.checking_template_update.outputs.docs_changed == 'True'
     steps:
-    - uses: andstor/copycat-action@v3
-      name: Push templates to ansbile repository
+    - name: Save current directory
+      uses: actions/checkout@v3
       with:
-        personal_token: ${{ secrets.REPO_TOKEN }}
-        src_path: projects/
-        filter: projects/!(*.*)
-        dst_path: roles/install-dep/templates/
-        dst_owner: Natannegara
-        dst_repo_name: config-management
+        path: 'src'
+        ref: master
+        persist-credentials: false
+    
+    - name: Get ansible directory
+      uses: actions/checkout@v3
+      with:
+        path: 'dest'
+        ref: master
+        persist-credentials: true
+        repository: 'Natannegara/config-management'
+        token: '${{ secrets.REPO_TOKEN }}'
+        fetch-depth: 0
+    
+    - name: copy src to dest
+      run: |
+        mkdir -p dest/config-management/test
+        cp -rvT src/projects dest/config-management/test
+        echo dest
+        ls dest
+        echo src
+        ls src/projects
+        
 
-    - uses: convictional/trigger-workflow-and-wait@v1.3.0
-      name: Triggering to Ansible
-      with:
-        owner: Natannegara
-        repo: config-management
-        github_token: ${{ secrets.REPO_TOKEN }}
-        workflow_file_name: config-management.yml
-        ref: master      
+    # - uses: convictional/trigger-workflow-and-wait@v1.3.0
+    #   name: Triggering to Ansible
+    #   with:
+    #     owner: Natannegara
+    #     repo: config-management
+    #     github_token: ${{ secrets.REPO_TOKEN }}
+    #     workflow_file_name: config-management.yml
+    #     ref: master      
     
