@@ -4,3 +4,4 @@ idna==3.3
 pytz==2022.1
 requests==2.27.0
 urllib3==1.26.9
+urllib3==1.26.8
