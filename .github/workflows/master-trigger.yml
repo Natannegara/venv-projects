@@ -19,59 +19,59 @@ jobs:
     - shell: bash
       id: check_file_changed
       run: |
-        # Diff HEAD with the previous commit
         export diff=$(git diff --name-only HEAD^ HEAD)
+        export updated="projects/"
 
-        # Check if a file under "projects/templates/" or with the .txt extension has changed (added, modified, deleted)
-        export SourceDiff=$($diff | Where-Object { $_ -match '^projects/templates/' -or $_ -match '.txt$' })
-        
-        $HasDiff = $SourceDiff.Length -gt 0
-        # Set the output named "docs_changed"
-        Write-Output "::set-output name=docs_changed::$HasDiff"
+        for i in $diff; do
+          if [[ "$i" == "$updated"* ]]; then
+            echo true $i
+            echo "::set-output name=docs_changed::$i"
+            exit 0
+          else
+            echo false $i
+          fi
+        done
 
     - run: |
         echo ${{ steps.check_file_changed.outputs.docs_changed }}
-    - run: |
-        echo ${{ steps.check_file_changed.outputs.source_diff }}
-  # Run the job only with "docs_changed" equals "True"
     
-  push_templates:
-    runs-on: 'ubuntu-20.04'
-    needs: [ checking_template_update ]
-    if: needs.checking_template_update.outputs.docs_changed == 'True'
-    steps:
-    - uses: andstor/copycat-action@v3
-      name: Push templates to ansbile repository
-      with:
-        personal_token: ${{ secrets.REPO_TOKEN }}
-        src_path: projects/templates/
-        dst_path: roles/install-dep/
-        dst_owner: Natannegara
-        dst_repo_name: config-management
+  # push_templates:
+  #   runs-on: 'ubuntu-20.04'
+  #   needs: [ checking_template_update ]
+  #   if: needs.checking_template_update.outputs.docs_changed == 'True'
+  #   steps:
+  #   - uses: andstor/copycat-action@v3
+  #     name: Push templates to ansbile repository
+  #     with:
+  #       personal_token: ${{ secrets.REPO_TOKEN }}
+  #       src_path: projects/templates/
+  #       dst_path: roles/install-dep/
+  #       dst_owner: Natannegara
+  #       dst_repo_name: config-management
 
-  push_vars:
-    runs-on: 'ubuntu-20.04'
-    needs: [ push_templates ]
-    if: needs.checking_template_update.outputs.docs_changed == 'True'
-    steps:        
-    - uses: andstor/copycat-action@v3
-      name: Push target to ansbile repository
-      with:
-        personal_token: ${{ secrets.REPO_TOKEN }}
-        src_path: projects/vars/
-        dst_path: roles/install-dep/
-        dst_owner: Natannegara
-        dst_repo_name: config-management
+  # push_vars:
+  #   runs-on: 'ubuntu-20.04'
+  #   needs: [ push_templates ]
+  #   if: needs.checking_template_update.outputs.docs_changed == 'True'
+  #   steps:        
+  #   - uses: andstor/copycat-action@v3
+  #     name: Push target to ansbile repository
+  #     with:
+  #       personal_token: ${{ secrets.REPO_TOKEN }}
+  #       src_path: projects/vars/
+  #       dst_path: roles/install-dep/
+  #       dst_owner: Natannegara
+  #       dst_repo_name: config-management
 
-  trigger_ansible:
-    runs-on: 'ubuntu-20.04'
-    needs: [ push_vars ]
-    if: needs.checking_template_update.outputs.docs_changed == 'True'
-    steps:         
-    - uses: convictional/trigger-workflow-and-wait@v1.3.0
-      with:
-        owner: Natannegara
-        repo: config-management
-        github_token: ${{ secrets.REPO_TOKEN }}
-        workflow_file_name: config-management.yml
-        ref: master
+  # trigger_ansible:
+  #   runs-on: 'ubuntu-20.04'
+  #   needs: [ push_vars ]
+  #   if: needs.checking_template_update.outputs.docs_changed == 'True'
+  #   steps:         
+  #   - uses: convictional/trigger-workflow-and-wait@v1.3.0
+  #     with:
+  #       owner: Natannegara
+  #       repo: config-management
+  #       github_token: ${{ secrets.REPO_TOKEN }}
+  #       workflow_file_name: config-management.yml
+  #       ref: master
