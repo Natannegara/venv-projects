@@ -58,7 +58,7 @@ jobs:
         mkdir -p dest/config-management/test
         cp -rvT src/projects dest/config-management/test
         echo dest
-        ls dest
+        ls dest/config-management
         echo src
         ls src/projects
         
