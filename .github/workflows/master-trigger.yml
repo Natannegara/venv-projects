@@ -56,8 +56,8 @@ jobs:
     - name: copy src to dest
       shell: bash
       run: |
-        mkdir -p dest/config-management/test
-        cp -rvT src/projects/* dest/config-management/test/
+        mkdir -p dest/config-management/roles/install-dep/templates
+        cp -rvT src/projects/* dest/config-management/roles/install-dep/templates
 
     - name: Check an Update
       id: newFiles
