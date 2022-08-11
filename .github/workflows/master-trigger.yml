@@ -64,7 +64,7 @@ jobs:
       shell: bash
       working-directory: dest
       run: |
-        for i in $(ls config-management/roles/install-dep/templates/); do
+        for i in $(find $(pwd)/config-management/roles/install-dep/templates/ -type f - name '*.txt'); do
           git add $i
         done
         
