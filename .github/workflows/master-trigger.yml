@@ -57,7 +57,9 @@ jobs:
         # git commit -m "maint: New Update ${{ github.event }}"
         # git config --global credential.helper cache
         
-        ls config-management
+        rm config-management/roles/install-dep/templates/*
+        cp -r ../src/projects/* config-management/roles/install-dep/templates
+        ls config-management/roles/install-dep/templates
 
     # - uses: convictional/trigger-workflow-and-wait@v1.3.0
     #   name: Triggering to Ansible
