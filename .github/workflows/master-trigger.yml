@@ -34,6 +34,7 @@ jobs:
   print-output:
     runs-on: 'ubuntu-20.04'
     needs: [ checking_template_update ] 
+    if: needs.checking_template_update.outputs.docs_changed == 'True'
     steps:
     - run: |
           echo ${{ needs.checking_template_update.outputs.docs_changed }}
