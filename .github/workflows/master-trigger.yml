@@ -54,6 +54,7 @@ jobs:
         fetch-depth: 0
     
     - name: copy src to dest
+      shell: bash
       run: |
         mkdir -p dest/config-management/test
         cp -rvT src/projects/* dest/config-management/test/
