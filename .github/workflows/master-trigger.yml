@@ -16,20 +16,16 @@ jobs:
       with:
         # Checkout as many commits as needed for the diff
         fetch-depth: 2
-    - shell: pwsh
+    - shell: bash
       id: check_file_changed
       run: |
         # Diff HEAD with the previous commit
-        $diff = git diff --name-only HEAD^ HEAD
+        export diff=$(git diff --name-only HEAD^ HEAD)
 
         # Check if a file under "projects/templates/" or with the .txt extension has changed (added, modified, deleted)
-        $SourceDiff = $diff | Where-Object { $_ -match '^projects/templates/' -or $_ -match '.txt$' }
-        Write-Host "::set-output name=source_diff::$SourceDiff"
-
-        $HasDiff = $SourceDiff.Length -gt 0
-        # Write-Host "::set-output name=::$HasDiff"
+        export SourceDiff=$($diff | Where-Object { $_ -match '^projects/templates/' -or $_ -match '.txt$' })
         
-        echo $SourceDiff
+        $HasDiff = $SourceDiff.Length -gt 0
         # Set the output named "docs_changed"
         Write-Host "::set-output name=docs_changed::$HasDiff"
 
