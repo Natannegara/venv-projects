@@ -27,7 +27,7 @@ jobs:
         
         $HasDiff = $SourceDiff.Length -gt 0
         # Set the output named "docs_changed"
-         "::set-output name=docs_changed::$HasDiff"
+        Write-Output "::set-output name=docs_changed::$HasDiff"
 
     - run: |
         echo ${{ steps.check_file_changed.outputs.docs_changed }}
