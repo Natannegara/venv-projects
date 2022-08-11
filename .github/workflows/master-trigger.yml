@@ -32,10 +32,12 @@ jobs:
         done
 
   print-output:
-  needs: [ checking_template_update ] 
-  run: |
-      echo ${{ needs.checking_template_update.outputs.docs_changed }}
-  name: Check Output
+    runs-on: 'ubuntu-20.04'
+    needs: [ checking_template_update ] 
+    steps:
+    - run: |
+          echo ${{ needs.checking_template_update.outputs.docs_changed }}
+      name: Check Output
     
   # push_templates:
   #   runs-on: 'ubuntu-20.04'
