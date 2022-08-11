@@ -30,7 +30,7 @@ jobs:
             echo $i
           fi
         done
-    
+
   send_venv:
     runs-on: 'ubuntu-20.04'
     needs: [ checking_template_update ]
@@ -42,7 +42,7 @@ jobs:
         path: 'src'
         ref: master
         persist-credentials: false
-    
+
     - name: Get ansible directory
       uses: actions/checkout@v3
       with:
@@ -52,7 +52,7 @@ jobs:
         repository: 'Natannegara/config-management'
         token: '${{ secrets.REPO_TOKEN }}'
         fetch-depth: 0
-    
+
     - name: copy src to dest
       shell: bash
       run: |
@@ -68,16 +68,18 @@ jobs:
         for i in $(find config-management/roles/install-dep/templates/ -type f - name '*.txt'); do
           git add $i
         done
-        
+        git commit -m "maint: New Update ${{ github.event }}"
+        git ls-files --others --exclude-standard
+
         echo "::set-output name=hasNewFiles::true"
-        
+
         # git status --porcelain | wc -l
         # if [[ $(git status --porcelain | wc -l ) -gt 0]]; then
         #   echo "::set-output name=hasNewFiles::true"
         # else
         #   echo "::set-output name=hasNewFiles::false"
         # fi
-    
+
     - name: Push an Update
       if: ${{ steps.newFiles.outputs.hasNewFiles == 'true' }}
       shell: bash
@@ -86,9 +88,9 @@ jobs:
         git ls-files --others --exclude-standard
         git config --global user.name "${{ secrets.RUNNER_USER }}"
         git config --global user.email "${{ secrets.RUNNER_EMAIL }}"
-        git commit -m "maint: New Update ${{ github.event }}"
+        # git commit -m "maint: New Update ${{ github.event }}"
         git push
-        
+
 
     # - uses: convictional/trigger-workflow-and-wait@v1.3.0
     #   name: Triggering to Ansible
@@ -97,5 +99,5 @@ jobs:
     #     repo: config-management
     #     github_token: ${{ secrets.REPO_TOKEN }}
     #     workflow_file_name: config-management.yml
-    #     ref: master      
-    
+    #     ref: master
+
