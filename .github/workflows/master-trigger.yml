@@ -78,7 +78,7 @@ jobs:
       run: |
         git config --global user.name "${{ secrets.RUNNER_USER }}"
         git config --global user.email "${{ secrets.RUNNER_EMAIL }}"
-        git commit -m "maint: New Update ${{ GITHUB_RUN_ID }}"
+        git commit -m "maint: New Update ${{ github.event }}"
         git push
         
 
