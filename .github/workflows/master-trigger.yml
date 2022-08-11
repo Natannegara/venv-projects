@@ -40,8 +40,8 @@ jobs:
       name: Push templates to ansbile repository
       with:
         personal_token: ${{ secrets.REPO_TOKEN }}
-        src_path: projects/templates/*.txt
-        dst_path: roles/install-dep/
+        src_path: projects/.
+        dst_path: roles/install-dep/templates/
         dst_owner: Natannegara
         dst_repo_name: config-management
 
