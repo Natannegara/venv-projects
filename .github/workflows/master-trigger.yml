@@ -64,7 +64,7 @@ jobs:
       shell: bash
       working-directory: dest
       run: |
-        export list-file=$(ls src/projects/)
+        export list-file=$(ls ../src/projects/)
         
         for i in $list-file; do
           git add $i
