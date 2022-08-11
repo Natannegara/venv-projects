@@ -27,6 +27,11 @@ jobs:
         echo $SourceDiff
         # Set the output named "docs_changed"
         Write-Host "::set-output name=docs_changed::$HasDiff"
+    - run: |
+        echo $diff
+        echo $SourceDiff
+        echo $HasDiff
+        echo ${{ steps.check_file_changed.outputs.docs_changed }}
   # Run the job only with "docs_changed" equals "True"
     
   push_templates:
