@@ -34,7 +34,7 @@ jobs:
   send_venv:
     runs-on: 'ubuntu-20.04'
     needs: [ checking_template_update ]
-    # if: needs.checking_template_update.outputs.docs_changed == 'True'
+    if: needs.checking_template_update.outputs.docs_changed == 'True'
     steps:
     - name: Save current directory
       uses: actions/checkout@v3
@@ -65,12 +65,12 @@ jobs:
         git commit -m "maint: New Update ${{ github.event }}"
         git push
 
-    # - uses: convictional/trigger-workflow-and-wait@v1.3.0
-    #   name: Triggering to Ansible
-    #   with:
-    #     owner: Natannegara
-    #     repo: config-management
-    #     github_token: ${{ secrets.REPO_TOKEN }}
-    #     workflow_file_name: config-management.yml
-    #     ref: master
+    - uses: convictional/trigger-workflow-and-wait@v1.3.0
+      name: Triggering to Ansible
+      with:
+        owner: Natannegara
+        repo: config-management
+        github_token: ${{ secrets.REPO_TOKEN }}
+        workflow_file_name: config-management.yml
+        ref: master
 
