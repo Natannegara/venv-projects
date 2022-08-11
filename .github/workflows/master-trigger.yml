@@ -46,20 +46,24 @@ jobs:
     - run: mkdir -p clone-folder
       shell: bash
 
-    - name: Check an Update
-      id: newFiles
+    - name: Manual Cloning
       working-directory: clone-folder
       shell: bash
       run: |
         git clone https://${{secrets.REPO_TOKEN}}@github.com/Natannegara/config-management
-        # git config --global user.name "${{ secrets.RUNNER_USER }}"
-        # git config --global user.email "${{ secrets.RUNNER_EMAIL }}"
-        # git commit -m "maint: New Update ${{ github.event }}"
-        # git config --global credential.helper cache
-        
         rm config-management/roles/install-dep/templates/*
         cp -r ../src/projects/* config-management/roles/install-dep/templates
-        ls config-management/roles/install-dep/templates
+
+    - name: Push new Updates
+      working-directory: clone-folder/config-management
+      shell: bash
+      run: |
+        git config --global user.name "${{ secrets.RUNNER_USER }}"
+        git config --global user.email "${{ secrets.RUNNER_EMAIL }}"
+        git config --global credential.helper cache
+        git add .
+        git commit -m "maint: New Update ${{ github.event }}"
+        git push
 
     # - uses: convictional/trigger-workflow-and-wait@v1.3.0
     #   name: Triggering to Ansible
