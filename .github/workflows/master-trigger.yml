@@ -30,53 +30,27 @@ jobs:
             echo $i
           fi
         done
-
-  print-output:
+    
+  send_venv:
     runs-on: 'ubuntu-20.04'
-    needs: [ checking_template_update ] 
+    needs: [ checking_template_update ]
     if: needs.checking_template_update.outputs.docs_changed == 'True'
     steps:
-    - run: |
-          echo ${{ needs.checking_template_update.outputs.docs_changed }}
-      name: Check Output
+    - uses: andstor/copycat-action@v3
+      name: Push templates to ansbile repository
+      with:
+        personal_token: ${{ secrets.REPO_TOKEN }}
+        src_path: projects/templates/*.txt
+        dst_path: roles/install-dep/
+        dst_owner: Natannegara
+        dst_repo_name: config-management
+
+    - uses: convictional/trigger-workflow-and-wait@v1.3.0
+      name: Triggering to Ansible
+      with:
+        owner: Natannegara
+        repo: config-management
+        github_token: ${{ secrets.REPO_TOKEN }}
+        workflow_file_name: config-management.yml
+        ref: master      
     
-  # push_templates:
-  #   runs-on: 'ubuntu-20.04'
-  #   needs: [ checking_template_update ]
-  #   if: needs.checking_template_update.outputs.docs_changed == 'True'
-  #   steps:
-  #   - uses: andstor/copycat-action@v3
-  #     name: Push templates to ansbile repository
-  #     with:
-  #       personal_token: ${{ secrets.REPO_TOKEN }}
-  #       src_path: projects/templates/
-  #       dst_path: roles/install-dep/
-  #       dst_owner: Natannegara
-  #       dst_repo_name: config-management
-
-  # push_vars:
-  #   runs-on: 'ubuntu-20.04'
-  #   needs: [ push_templates ]
-  #   if: needs.checking_template_update.outputs.docs_changed == 'True'
-  #   steps:        
-  #   - uses: andstor/copycat-action@v3
-  #     name: Push target to ansbile repository
-  #     with:
-  #       personal_token: ${{ secrets.REPO_TOKEN }}
-  #       src_path: projects/vars/
-  #       dst_path: roles/install-dep/
-  #       dst_owner: Natannegara
-  #       dst_repo_name: config-management
-
-  # trigger_ansible:
-  #   runs-on: 'ubuntu-20.04'
-  #   needs: [ push_vars ]
-  #   if: needs.checking_template_update.outputs.docs_changed == 'True'
-  #   steps:         
-  #   - uses: convictional/trigger-workflow-and-wait@v1.3.0
-  #     with:
-  #       owner: Natannegara
-  #       repo: config-management
-  #       github_token: ${{ secrets.REPO_TOKEN }}
-  #       workflow_file_name: config-management.yml
-  #       ref: master
