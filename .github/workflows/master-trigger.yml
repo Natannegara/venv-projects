@@ -10,6 +10,7 @@ jobs:
     # Declare outputs for next jobs
     outputs:
       docs_changed: ${{ steps.check_file_changed.outputs.docs_changed }}
+      source_diff: ${{ steps.check_file_changed.outputs.source_diff }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -20,18 +21,22 @@ jobs:
       run: |
         # Diff HEAD with the previous commit
         $diff = git diff --name-only HEAD^ HEAD
+
         # Check if a file under "projects/templates/" or with the .txt extension has changed (added, modified, deleted)
         $SourceDiff = $diff | Where-Object { $_ -match '^projects/templates/' -or $_ -match '.txt$' }
-        echo $SourceDiff
+        Write-Host "::set-output name=source_diff::$SourceDiff"
+
         $HasDiff = $SourceDiff.Length -gt 0
+        # Write-Host "::set-output name=::$HasDiff"
+        
         echo $SourceDiff
         # Set the output named "docs_changed"
         Write-Host "::set-output name=docs_changed::$HasDiff"
+
     - run: |
-        echo $diff
-        echo $SourceDiff
-        echo $HasDiff
         echo ${{ steps.check_file_changed.outputs.docs_changed }}
+    - run: |
+        echo ${{ steps.check_file_changed.outputs.source_diff }}
   # Run the job only with "docs_changed" equals "True"
     
   push_templates:
