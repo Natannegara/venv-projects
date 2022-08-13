@@ -20,7 +20,7 @@ jobs:
       name: Check for any updates in projects folder
       run: |
 
-        if [[ $(echo $(git diff --name-only HEAD^ HEAD projects/) | wc -c) > 0 ]]; then
+        if [[ $(echo $(git diff --name-only HEAD^ HEAD projects/) | wc -w) > 0 ]]; then
           echo "::set-output name=docs_changed::True"
           exit 0
         else
