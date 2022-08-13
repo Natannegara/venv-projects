@@ -19,17 +19,13 @@ jobs:
       id: check_file_changed
       name: Check for any updates in projects folder
       run: |
-        export diff=$(git diff --name-only HEAD^ HEAD)
-        export updated="projects/"
 
-        for i in $diff; do
-          if [[ "$i" == "$updated"* ]]; then
-            echo "::set-output name=docs_changed::True"
-            exit 0
-          else
-            echo $i
-          fi
-        done
+        if [[ $(git diff --name-only HEAD^ HEAD projects/) -gt 0 == true ]]; then
+          echo "::set-output name=docs_changed::True"
+          exit 0
+        else
+          echo $i
+        fi
 
   send_venv:
     runs-on: 'ubuntu-20.04'
